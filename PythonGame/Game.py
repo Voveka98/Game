@@ -165,3 +165,37 @@ while run:
             jumpCount = 10
     drawWindow()
 pygame.quit()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    def collide(self, blocks):
+        for block in blocks:
+            if ((self.x > block.x and self.x < block.x + block.Blocks_Width) and
+                ((self.y + self.HEIGHT > block.y and
+                    self.y + self.HEIGHT < block.y + block.Blocks_Height) or
+                 self.y > block.y and self.y < block.y + block.Blocks_Height)):
+
+                self.xvel_to_left = 0
+                self.xvel_to_right = MOVE_SPEED
+                return [int(self.xvel_to_left), int(self.xvel_to_right)]  # то не движется вправо
+            if ((self.x > block.x and self.x < block.x + block.Blocks_Width and
+                ((self.y + self.HEIGHT > block.y and
+                    self.y + self.HEIGHT < block.y + block.Blocks_Height) or
+                 self.y > block.y and self.y < block.y + block.Blocks_Height))):
+
+                self.xvel_to_right = 0
+                self.xvel_to_left = MOVE_SPEED
+                return [int(self.xvel_to_left), int(self.xvel_to_right)]

@@ -23,26 +23,26 @@ entities = pygame.sprite.Group()
 blocks = []
 entities.add(player)
 level = [
-       "-------------------------",
-       "-                       -",
-       "-                       -",
-       "-                       -",
-       "-                       -",
-       "-      ---              -",
-       "-                       -",
-       "-                       -",
-       "-        -              -",
-       "-                       -",
-       "-                       -",
-       "-                       -",
-       "-                       -",
-       "-                       -",
-       "-                       -",
-       "-                       -",
-       "-                       -",
-       "-                       -",
-       "-                       -",
-       "-------------------------"]
+       "       ------------------",
+       "                        -",
+       "                        -",
+       "                        -",
+       "                        -",
+       "       ---              -",
+       "                        -",
+       "                        -",
+       "         -              -",
+       "                        -",
+       "                        -",
+       "                        -",
+       "                        -",
+       "                        -",
+       "                        -",
+       "                        -",
+       "                        -",
+       "               -        -",
+       "               -        -",
+       "                         "]
 
 bg = pygame.image.load('/home/vovek/PythonGame/assets/fon.jpg')
 clock = pygame.time.Clock()
@@ -93,8 +93,8 @@ def drawWindow():
                 start_time = current_time
     for e in entities:
         win.blit(e.image, (e.x, e.y))
-    player.motion()
-    player.collide(player.xvel, player.yvel, blocks)
+    player.collide(blocks)
+    player.motion(blocks)
     for shell in shells:
 
         shell.draw(win)
