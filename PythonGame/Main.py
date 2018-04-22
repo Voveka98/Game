@@ -5,7 +5,7 @@ import Shell
 from time import time
 
 
-player = Player.player(50, 425)
+player = Player.player(50, 25)
 
 
 Win_Width = 500
@@ -23,26 +23,26 @@ entities = pygame.sprite.Group()
 blocks = []
 entities.add(player)
 level = [
-       "       ------------------",
-       "                        -",
-       "                        -",
-       "                        -",
-       "                        -",
-       "       ---              -",
-       "                        -",
-       "                        -",
-       "         -              -",
-       "                        -",
-       "                        -",
-       "                        -",
-       "                        -",
-       "                        -",
-       "                        -",
-       "                        -",
-       "                        -",
-       "               -        -",
-       "               -        -",
-       "                         "]
+    "-                        ",
+    "-                        ",
+    "-                       -",
+    "-                       -",
+    "-                       -",
+    "-                       -",
+    "-                       -",
+    "-                       -",
+    "-                       -",
+    "-                       -",
+    "-                       -",
+    "-                        ",
+    "-                        ",
+    "-                        ",
+    "-                        ",
+    "-                        ",
+    "-                        ",
+    "-                     ---",
+    "--             ----------",
+    "-------------------------"]
 
 bg = pygame.image.load('/home/vovek/PythonGame/assets/fon.jpg')
 clock = pygame.time.Clock()
@@ -51,9 +51,9 @@ x = y = 0
 for row in level:
     for col in row:
         if col == '-':
-            pf = Blocks.Blocks((50, 50, 50), x, y)
-            entities.add(pf)
-            blocks.append(pf)
+            block = Blocks.Blocks((50, 50, 50), x, y)
+            entities.add(block)
+            blocks.append(block)
             # pf = pygame.Surface((Blocks.Blocks_Width, Blocks.Blocks_Height))
             # pf.fill(Blocks.Blocs_Color)
             # win.blit(pf, (x, y))
@@ -87,16 +87,16 @@ def drawWindow():
         current_time = time()
         if current_time - start_time > 0.1:
             if len(shells) < 50:
-                shells.append(Shell.shell(round(player.x + Player.WIDTH/2),
-                                          round(player.y + Player.HEIGHT/2),
+                shells.append(Shell.shell(round(player.x + Player.WIDTH / 2),
+                                          round(player.y + Player.HEIGHT / 2),
                                           5, (255, 000, 100), facing))
                 start_time = current_time
     for e in entities:
         win.blit(e.image, (e.x, e.y))
-    player.collide(blocks)
+    # vel_left = player.collide(blocks)[0]
+    # vel_right = player.collide(blocks)[1]
     player.motion(blocks)
     for shell in shells:
-
         shell.draw(win)
         shell.motion()
     # entities.draw(win)
@@ -112,9 +112,6 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-
-        # entities.draw(win)
-        # player.motion()
         drawWindow()
 
 
