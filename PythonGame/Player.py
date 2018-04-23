@@ -2,7 +2,6 @@ import pygame
 from Load_pictures import walkLeft
 from Load_pictures import walkRight
 from Load_pictures import stay_picture
-from Shell import shell
 
 picture = None
 animCount = 0
@@ -12,7 +11,6 @@ MOVE_SPEED = 5
 JUMP_SPEED = 24
 lastMove = None
 onGround = False
-jumpCount = 10
 
 
 class player(pygame.sprite.Sprite):
@@ -31,23 +29,24 @@ class player(pygame.sprite.Sprite):
         self.walkRight = walkRight
         self.stay_picture = stay_picture
         self.lastMove = lastMove
-        self.image = pygame.image.load('assets/trump.jpg')
+        self.image = stay_picture
         self.rect = self.image.get_rect()
         self.onGround = onGround
         self.jumpCount = jumpCount
 
     def collide(self, blocks):
         for block in blocks:
-            if (self.x > block.x + 2 and self.x < block.x + block.Blocks_Width - 2
+            if (self.x > block.x + 2 and
+                self.x < block.x + block.Blocks_Width - 2
                     and self.y + self.HEIGHT + self.yvel > block.y
                     and (self.y + self.HEIGHT > block.y
                          and self.y < block.y + block.Blocks_Height)):
                 if not self.onGround:
                     self.xvel = 0
                     self.x = block.x + block.Blocks_Width
-                # return [int(self.xvel_to_left), int(self.xvel_to_right)]  # то не движется вправо
             elif ((self.x + self.WIDTH > block.x)
-                  and (self.x + self.WIDTH < block.x + block.Blocks_Width and self.y + self.HEIGHT > block.y)
+                  and (self.x + self.WIDTH < block.x + block.Blocks_Width and
+                       self.y + self.HEIGHT > block.y)
                     and (self.y + self.HEIGHT + self.yvel > block.y)
                     and (self.y + self.HEIGHT > block.y
                          and self.y < block.y + block.Blocks_Height)):
@@ -56,14 +55,14 @@ class player(pygame.sprite.Sprite):
                     self.x = block.x - self.WIDTH
 
         for block in blocks:
-            if (self.x > block.x + 2 and self.x < block.x + block.Blocks_Width - 2
+            if (self.x > block.x + 2 and
+                self.x < block.x + block.Blocks_Width - 2
                     and self.y + self.HEIGHT + self.yvel > block.y
                     and self.y < block.y + block.Blocks_Height):
                 if (self.yp + self.HEIGHT < block.y or self.y == self.yp):
                     self.y = block.y - self.HEIGHT
                     self.yvel = 0
                     self.onGround = True
-                # return [int(self.xvel_to_left), int(self.xvel_to_right)]  # то не движется вправо
             elif ((self.x + self.WIDTH > block.x)
                   and (self.x + self.WIDTH < block.x + block.Blocks_Width)
                     and (self.y + self.HEIGHT + self.yvel > block.y)
@@ -72,25 +71,6 @@ class player(pygame.sprite.Sprite):
                     self.y = block.y - self.HEIGHT
                     self.yvel = 0
                     self.onGround = True
-                # return [int(self.xvel_to_left), int(self.xvel_to_right)]
-
-            # elif self.x + self.WIDTH < block.x:
-            #     #if self.xvel < 0:                      # если движется влево
-            #     self.xvel = 0
-            #     return int(self.xvel)
-            # else:
-                # self.xvel_to_right = MOVE_SPEED
-                # self.xvel_to_left = MOVE_SPEED
-                # return [int(self.xvel_to_left), int(self.xvel_to_right)]
-
-        # if self.yvel > 0:                      # если падает вниз
-        #     self.rect.bottom = p.rect.top  # то не падает вниз
-        #     self.onGround = True          # и становится на что-то твердое
-        #     self.yvel = 0                 # и энергия падения пропадает
-        #
-        # if self.yvel < 0:                      # если движется вверх
-        #     self.rect.top = p.rect.bottom  # то не движется вверх
-        #     self.yvel = 0                 # и энергия прыжка пропадает
 
     def motion(self, blocks):
         global animCount
@@ -130,11 +110,6 @@ class player(pygame.sprite.Sprite):
         self.xvel *= 0.8
         self.yp = self.y
         self.y += self.yvel
-
-        # if self.y > 400:
-        #     self.y = 400
-        #     self.yvel = 0
-        #     self.onGround = True
 
     def draw(self, win):
         pygame.draw.circle(win, (255, 0, 0), (int(self.x), int(self.y)), 1)

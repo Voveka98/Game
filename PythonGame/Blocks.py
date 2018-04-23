@@ -16,6 +16,4 @@ class Blocks(pygame.sprite.Sprite):
         self.Blocks_Height = Blocks_Height
         self.image = pygame.Surface([self.Blocks_Width, self.Blocks_Height])
         self.image.fill(color)
-
         self.rect = self.image.get_rect()
-        # self.rect = pygame.Rect(x, y, Blocks_Width, Blocks_Height)

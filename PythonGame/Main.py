@@ -41,9 +41,6 @@ for row in level:
             block = Blocks.Blocks((50, 50, 50), x, y)
             entities.add(block)
             blocks.append(block)
-            # pf = pygame.Surface((Blocks.Blocks_Width, Blocks.Blocks_Height))
-            # pf.fill(Blocks.Blocs_Color)
-            # win.blit(pf, (x, y))
         x += Blocks.Blocks_Width
     y += Blocks.Blocks_Height
     x = 0
@@ -80,13 +77,10 @@ def drawWindow():
                 start_time = current_time
     for e in entities:
         win.blit(e.image, (e.x, e.y))
-    # vel_left = player.collide(blocks)[0]
-    # vel_right = player.collide(blocks)[1]
     player.motion(blocks)
     for shell in shells:
         shell.draw(win)
         shell.motion(blocks)
-    # entities.draw(win)
     player.draw(win)
     pygame.display.update()
 
