@@ -5,7 +5,7 @@ import Shell
 from time import time
 
 
-player = Player.player(50, 25)
+player = Player.player(150, 25)
 
 
 Win_Width = 500
@@ -24,24 +24,11 @@ blocks = []
 entities.add(player)
 level = [
     "-                        ",
-    "-                        ",
-    "-                       -",
-    "-                       -",
-    "-                       -",
-    "-                       -",
-    "-                       -",
-    "-                       -",
-    "-                       -",
-    "-                       -",
-    "-                       -",
-    "-                        ",
-    "-                        ",
-    "-                        ",
-    "-                        ",
-    "-                        ",
-    "-                        ",
-    "-                     ---",
-    "--             ----------",
+    "-   -                    ",
+    "-      ------            ",
+    "-     -                  ",
+    "-    -                ---",
+    "-- -- ---      ----------",
     "-------------------------"]
 
 bg = pygame.image.load('/home/vovek/PythonGame/assets/fon.jpg')
@@ -98,7 +85,7 @@ def drawWindow():
     player.motion(blocks)
     for shell in shells:
         shell.draw(win)
-        shell.motion()
+        shell.motion(blocks)
     # entities.draw(win)
     player.draw(win)
     pygame.display.update()
