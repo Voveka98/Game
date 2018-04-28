@@ -7,7 +7,11 @@ import Enemy
 
 
 player = Player.player(150, 25)
-enemy = Enemy.Enemy(200, 50)
+enemies = pygame.sprite.Group()
+enemy1 = Enemy.Enemy(450, 50)
+enemy2 = Enemy.Enemy(150, 200)
+enemies.add(enemy1)
+enemies.add(enemy2)
 
 Win_Width = 500
 Win_Height = 500
@@ -19,11 +23,13 @@ pygame.display.set_caption("Python game")
 start_time = time()
 
 
-shells = []
+shells_from_player = []
+shells_from_enemy = []
 entities = pygame.sprite.Group()
 blocks = []
 entities.add(player)
-entities.add(enemy)
+entities.add(enemy1)
+entities.add(enemy2)
 level = [
     "-                        ",
     "-   -                    ",
@@ -55,16 +61,9 @@ def play_music():
 
 
 def drawWindow():
-
     win.blit(bg, (0, 0))
-
-    for shell in shells:
-        if shell.x < 500 and shell.x > 0:
-            shell.x += shell.vel
-        else:
-            shells.pop(shells.index(shell))
-    keys = pygame.key.get_pressed()
     global start_time
+    keys = pygame.key.get_pressed()
     if keys[pygame.K_f]:
         if player.lastMove == 'right':
             facing = 1
@@ -72,22 +71,36 @@ def drawWindow():
             facing = -1
         current_time = time()
         if current_time - start_time > 0.1:
-            if len(shells) < 50:
-                shells.append(Shell.shell(round(player.x + Player.WIDTH / 2),
-                                          round(player.y + Player.HEIGHT / 2),
-                                          5, (255, 000, 100), facing))
+            if len(shells_from_player) < 50:
+                shells_from_player.append(Shell.shell(round(player.x + Player.WIDTH / 2),
+                                                      round(
+                                                          player.y + Player.HEIGHT / 2),
+                                                      5, (255, 000, 100), facing))
                 start_time = current_time
-    enemy.motion(blocks)
-    # enemy.Hit_player(player, blocks, win, entities)
+    for shell in shells_from_player:
+        if shell.x < 500 and shell.x > 0:
+            shell.x += shell.vel
+        else:
+            shells_from_player.pop(shells_from_player.index(shell))
+    for shell in shells_from_enemy:
+        if shell.x < 500 and shell.x > 0:
+            shell.x += shell.vel
+        else:
+            shells_from_enemy.pop(shells_from_enemy.index(shell))
+    for enemy in enemies:
+        enemy.motion(blocks)
+        enemy.Hit_player(player, blocks, win, shells_from_enemy)
+        enemy.motion(blocks)
+        enemy.death(shells_from_player, win)
+
+    player.motion(blocks)
+    player.death(shells_from_enemy, win)
     for e in entities:
         win.blit(e.image, (e.x, e.y))
-    player.motion(blocks)
-    enemy.motion(blocks)
-    # enemy.Hit_player(player, blocks, win, entities)
+    shells = shells_from_player + shells_from_enemy
     for shell in shells:
         shell.draw(win)
         shell.motion(blocks)
-    player.draw(win)
     pygame.display.update()
 
 

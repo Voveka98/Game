@@ -9,7 +9,7 @@ class shell(pygame.sprite.Sprite):
         self.radius = radius
         self.color = color
         self.facing = facing
-        self.vel = 2 * self.facing
+        self.vel = 2 * facing
         self.image = pygame.Surface([self.radius, self.radius])
         self.image.fill(color)
         self.rect = self.image.get_rect()

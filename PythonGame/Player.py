@@ -32,6 +32,7 @@ class player(pygame.sprite.Sprite):
         self.image = stay_picture
         self.rect = self.image.get_rect()
         self.onGround = onGround
+        self.hp = 15
 
     def camera_motion(self):
         pass
@@ -146,3 +147,13 @@ class player(pygame.sprite.Sprite):
         if self.onGround:
             pygame.draw.circle(win, (0, 0, 0), (int(
                 self.x + self.WIDTH / 2), int(self.y)), 5)
+
+    def death(self, shells, win):
+        for shel in shells:
+            if (shel.x + shel.radius > self.x
+                and shel.x + shel.radius < self.x + self.WIDTH
+                    and shel.y > self.y and shel.y < self.y + self.HEIGHT):
+                self.hp -= 1
+        if self.hp <= 0:
+            pygame.draw.line(win, (255, 0, 0), (self.x - 200, 0),
+                             (self.x - 200, 500))

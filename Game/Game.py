@@ -47,6 +47,28 @@ lastMove = 'right'
 clock = pygame.time.Clock()
 run = True
 bullets = []
+crips = []
+
+
+class player():
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+
+
+class crip():
+    def __init__(self, x, y, width, height, color, thickness):
+        self.width = width
+        self.height = height
+        self.x = x
+        self.y = y
+        self.color = color
+        self.thickness = thickness
+
+    def draw(self, win):
+        pygame.draw.rect(win, self.color, (self.x, self.y, self.width
+                                           , self.height)
+                         , self.thickness)
 
 
 class snaryad():
@@ -78,6 +100,8 @@ def drawWindow():
         win.blit(playerStamd, (x, y))
     for bullet in bullets:
         bullet.draw(win)
+    for crip in crips:
+        crip.draw(win)
 
     pygame.display.update()
 
@@ -94,7 +118,11 @@ while run:
             bullets.pop(bullets.index(bullet))
 
     keys = pygame.key.get_pressed()
-
+    if keys[pygame.K_z]:
+        crips.append(crip(250, 425, 60, 71, (randint(1, 255)
+                                             , randint(1, 255)
+                                             , randint(1, 255)),
+                          5))
     if keys[pygame.K_f]:
         if lastMove == 'right':
             facing = 1
@@ -123,7 +151,7 @@ while run:
         right = False
         animCount = 0
     if not(isJump):
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_SPACE] or keys[pygame.K_UP]:
             isJump = True
     else:
         if jumpCount >= -10:
@@ -137,3 +165,126 @@ while run:
             jumpCount = 10
     drawWindow()
 pygame.quit()
+
+
+
+
+
+
+import pygame
+from Load_pictures import walkLeft
+from Load_pictures import walkRight
+from Load_pictures import stay_picture
+from Shell import shell
+
+picture = None
+animCount = 0
+WIDTH = 60
+HEIGHT = 71
+MOVE_SPEED = 3
+lastMove = None
+onGround = False
+jumpCount = 10
+
+
+class player(pygame.sprite.Sprite):
+
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.xvel_to_right = MOVE_SPEED
+        self.xvel_to_left = MOVE_SPEED
+        self.yvel = MOVE_SPEED
+            self.WIDTH = WIDTH
+        self.HEIGHT = HEIGHT
+        self.x = x
+        self.y = y
+        self.walkLeft = walkLeft
+        self.walkRight = walkRight
+        self.stay_picture = stay_picture
+        self.lastMove = lastMove
+        self.image = pygame.image.load('assets/trump.jpg')
+        self.rect = self.image.get_rect()
+        self.onGround = onGround
+        self.jumpCount = jumpCount
+
+    def collide(self, blocks):
+        self._GoRight = True
+        self._GoLeft = True
+        self.xvel_to_left = MOVE_SPEED
+        self.xvel_to_right = MOVE_SPEED
+        for block in blocks:
+            if (self.x > block.x and self.x < block.x + block.Blocks_Width
+             and self.y + self.HEIGHT > block.y):
+                self._GoLeft = False
+                # return [int(self.xvel_to_left), int(self.xvel_to_right)]  # то не движется вправо
+            elif ((self.x + self.WIDTH > block.x)
+                  and (self.x + self.WIDTH < block.x + block.Blocks_Width)
+                  and (self.y + self.HEIGHT > block.y)):
+                self._GoRight = False
+                # return [int(self.xvel_to_left), int(self.xvel_to_right)]
+
+            # elif self.x + self.WIDTH < block.x:
+            #     #if self.xvel < 0:                      # если движется влево
+            #     self.xvel = 0
+            #     return int(self.xvel)
+            # else:
+                # self.xvel_to_right = MOVE_SPEED
+                # self.xvel_to_left = MOVE_SPEED
+                # return [int(self.xvel_to_left), int(self.xvel_to_right)]
+        if not self._GoLeft:
+            self.xvel_to_left = 0
+        if not self._GoRight:
+            self.xvel_to_right = 0
+        return [int(self.xvel_to_left), int(self.xvel_to_right)]
+
+                # if self.yvel > 0:                      # если падает вниз
+                #     self.rect.bottom = p.rect.top  # то не падает вниз
+                #     self.onGround = True          # и становится на что-то твердое
+                #     self.yvel = 0                 # и энергия падения пропадает
+                #
+                # if self.yvel < 0:                      # если движется вверх
+                #     self.rect.top = p.rect.bottom  # то не движется вверх
+                #     self.yvel = 0                 # и энергия прыжка пропадает
+
+    def motion(self, blocks):
+        global animCount
+        global picture
+
+        if animCount + 1 >= 30:
+            animCount = 0
+        keys = pygame.key.get_pressed()
+        self.xvel_to_left = self.collide(blocks)[0]
+        self.xvel_to_right = self.collide(blocks)[1]
+        if keys[pygame.K_LEFT] and self.x > 5:
+            animCount += 1
+            self.image = self.walkRight[animCount // 5]
+            self.x -= self.xvel_to_left
+            self.lastMove = 'left'
+
+        elif (keys[pygame.K_RIGHT] and self.x < 450):
+            animCount += 1
+            self.image = self.walkLeft[animCount // 5]
+            self.x += self.xvel_to_right
+            self.lastMove = 'right'
+
+        else:
+            self.image = self.stay_picture
+
+        if self.onGround:
+            if (keys[pygame.K_UP] or keys[pygame.K_SPACE]):
+                self.onGround = False
+        else:
+            if self.jumpCount >= -10:
+                if self.jumpCount > 0:
+                    self.y -= (self.jumpCount ** 2) / 2
+                else:
+                    self.y += (self.jumpCount ** 2) / 2
+                self.jumpCount -= 1
+            else:
+                self.onGround = True
+                self.jumpCount = 10
+
+
+    def draw(self, win):
+        pygame.draw.circle(win, (255, 0, 0), (int(self.x), int(self.y)), 1)
+        pygame.draw.circle(win, (255, 0, 0), (int(self.x + self.WIDTH), int(self.y + self.HEIGHT)), 1)
