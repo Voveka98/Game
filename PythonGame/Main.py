@@ -3,10 +3,11 @@ import Player
 import pygame
 import Shell
 from time import time
+import Enemy
 
 
 player = Player.player(150, 25)
-
+enemy = Enemy.Enemy(200, 50)
 
 Win_Width = 500
 Win_Height = 500
@@ -22,13 +23,14 @@ shells = []
 entities = pygame.sprite.Group()
 blocks = []
 entities.add(player)
+entities.add(enemy)
 level = [
     "-                        ",
     "-   -                    ",
     "-      ------            ",
-    "-     -                  ",
-    "-    -                ---",
-    "-- -- ---      ----------",
+    "                         ",
+    " - -                  ---",
+    "-     -       ----------",
     "-------------------------"]
 
 bg = pygame.image.load('/home/vovek/PythonGame/assets/fon.jpg')
@@ -75,9 +77,13 @@ def drawWindow():
                                           round(player.y + Player.HEIGHT / 2),
                                           5, (255, 000, 100), facing))
                 start_time = current_time
+    enemy.motion(blocks)
+    # enemy.Hit_player(player, blocks, win, entities)
     for e in entities:
         win.blit(e.image, (e.x, e.y))
     player.motion(blocks)
+    enemy.motion(blocks)
+    # enemy.Hit_player(player, blocks, win, entities)
     for shell in shells:
         shell.draw(win)
         shell.motion(blocks)

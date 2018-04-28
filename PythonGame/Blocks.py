@@ -2,7 +2,7 @@ import pygame
 
 
 Blocks_Width = 70
-Blocks_Height = 70
+Blocks_Height = 72
 Blocs_Color = (50, 50, 50)
 
 
