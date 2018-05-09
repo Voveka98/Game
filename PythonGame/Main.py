@@ -2,19 +2,23 @@ import Blocks
 import Player
 import pygame
 import Shell
+from random import randint
 from time import time
 import Enemy
 
 
+dx = 0
+
 player = Player.player(150, 25)
 enemies = pygame.sprite.Group()
-enemy1 = Enemy.Enemy(450, 50)
-enemy2 = Enemy.Enemy(150, 200)
+enemy1 = Enemy.Enemy(350, 50)
+enemy2 = Enemy.Enemy(100, 200)
 enemies.add(enemy1)
 enemies.add(enemy2)
+bot_start_time = time()
 
 Win_Width = 500
-Win_Height = 500
+Win_Height = 1000
 
 pygame.init()
 keys = pygame.key.get_pressed()
@@ -31,15 +35,22 @@ entities.add(player)
 entities.add(enemy1)
 entities.add(enemy2)
 level = [
-    "-                        ",
-    "-   -                    ",
-    "-      ------            ",
-    "                         ",
-    " - -                  ---",
-    "-     -       ----------",
-    "-------------------------"]
+    "-                                     -",
+    "-                                     -",
+    "-                                     -",
+    "-                                     -",
+    "-                                     -",
+    "-                                     -",
+    "-                                     -",
+    "-              --                     -",
+    "-   -                                 -",
+    "-      ------                         -",
+    "-                       -             -",
+    "-- -                  ---    ---      -",
+    "-     -       -----------          -- -",
+    "---------------------------------------"]
 
-bg = pygame.image.load('/home/vovek/PythonGame/assets/fon.jpg')
+# bg = pygame.image.load('/home/vovek/PythonGame/assets/fon.jpg')
 clock = pygame.time.Clock()
 
 x = y = 0
@@ -54,16 +65,24 @@ for row in level:
     x = 0
 
 
+def create_enemy():
+    enemy = Enemy.Enemy(player.x + 250, player.y)
+    entities.add(enemy)
+    enemies.add(enemy)
+
+
 def play_music():
     pygame.mixer.music.load('/home/vovek/PythonGame/music/Led')
-    pygame.mixer.music.set_volume(0.45)
+    pygame.mixer.music.set_volume(0)
     pygame.mixer.music.play(-1, 0.0)
 
 
 def drawWindow():
-    win.blit(bg, (0, 0))
+    win.fill((200, 200, 200, 200))
     global start_time
     keys = pygame.key.get_pressed()
+    if keys[pygame.K_y]:
+        create_enemy()
     if keys[pygame.K_f]:
         if player.lastMove == 'right':
             facing = 1
@@ -72,13 +91,16 @@ def drawWindow():
         current_time = time()
         if current_time - start_time > 0.1:
             if len(shells_from_player) < 50:
-                shells_from_player.append(Shell.shell(round(player.x + Player.WIDTH / 2),
+                shells_from_player.append(Shell.shell(round(player.x +
+                                                            Player.WIDTH / 2),
                                                       round(
-                                                          player.y + Player.HEIGHT / 2),
-                                                      5, (255, 000, 100), facing))
+                                                          player.y +
+                    Player.HEIGHT / 2),
+                    5, (255, 000, 100),
+                    facing))
                 start_time = current_time
     for shell in shells_from_player:
-        if shell.x < 500 and shell.x > 0:
+        if abs(shell.x - player.x) < 1000:
             shell.x += shell.vel
         else:
             shells_from_player.pop(shells_from_player.index(shell))
@@ -87,15 +109,19 @@ def drawWindow():
             shell.x += shell.vel
         else:
             shells_from_enemy.pop(shells_from_enemy.index(shell))
+    for block in blocks:
+        block.shell_collision(shells_from_enemy)
+        block.shell_collision(shells_from_player)
     for enemy in enemies:
         enemy.motion(blocks)
-        enemy.Hit_player(player, blocks, win, shells_from_enemy)
         enemy.motion(blocks)
         enemy.death(shells_from_player, win)
-
-    player.motion(blocks)
+        enemy.Hit_player(player, blocks, win, shells_from_enemy)
+    player.motion(blocks, enemies)
     player.death(shells_from_enemy, win)
     for e in entities:
+        if not e.isLive:
+            entities.remove(e)
         win.blit(e.image, (e.x, e.y))
     shells = shells_from_player + shells_from_enemy
     for shell in shells:
@@ -106,12 +132,12 @@ def drawWindow():
 
 def main():
     play_music()
-    run = True
-    while run:
+    # run = True
+    while player.player_run:
         clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
+                player.player_run = False
         drawWindow()
 
 

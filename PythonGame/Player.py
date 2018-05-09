@@ -1,14 +1,17 @@
 import pygame
+# from Main import Win_Width
 from Load_pictures import walkLeft
 from Load_pictures import walkRight
 from Load_pictures import stay_picture
+from time import sleep
 
+Win_Width = 500
 picture = None
 animCount = 0
 WIDTH = 60
 HEIGHT = 71
 MOVE_SPEED = 5
-JUMP_SPEED = 30
+JUMP_SPEED = 40
 lastMove = None
 onGround = False
 
@@ -32,10 +35,11 @@ class player(pygame.sprite.Sprite):
         self.image = stay_picture
         self.rect = self.image.get_rect()
         self.onGround = onGround
-        self.hp = 15
-
-    def camera_motion(self):
-        pass
+        self.hp = 15000
+        self.collide_right = False
+        self.collide_left = False
+        self.player_run = True
+        self.isLive = True
 
     def collide(self, blocks):
         for block in blocks:
@@ -49,6 +53,8 @@ class player(pygame.sprite.Sprite):
                 if not self.onGround:
                     self.xvel = 0
                     self.x = block.x + block.Blocks_Width
+                self.collide_left = True
+                self.collide_right = False
 
             # Коллизия с блоком справа
             elif ((self.x + self.WIDTH > block.x)
@@ -61,6 +67,8 @@ class player(pygame.sprite.Sprite):
                 if not self.onGround:
                     self.xvel = 0
                     self.x = block.x - self.WIDTH
+                self.collide_right = True
+                self.collide_left = False
 
         for block in blocks:
             # Коллизия с блоком при движении вниз
@@ -89,7 +97,7 @@ class player(pygame.sprite.Sprite):
                     self.yvel = 0
                     self.onGround = True
 
-    def motion(self, blocks):
+    def motion(self, blocks, enemies):
         global animCount
         global picture
         if animCount + 1 >= 30:
@@ -129,24 +137,31 @@ class player(pygame.sprite.Sprite):
             self.image = self.stay_picture
     # Записываем предыдущую координату.
         self.xp = self.x
-        self.x += self.xvel
+        if self.x > Win_Width / 2:
+            self.x = min(Win_Width * 0.7, self.x + self.xvel)
+        else:
+            self.x = max(Win_Width * 0.3, self.x + self.xvel)
+        dx = self.x - (self.xp + self.xvel)
+        for b in blocks:
+            b.x += dx
+        for e in enemies:
+            e.x += dx
+        #         e.y += 125
     # Делаем инерцию движения
         self.xvel *= 0.8
     # Записываем предыдущую координату.
         self.yp = self.y
+        # if self.onGround:
+        # if self.y < 125:
+        #     self.y = max(125, self.y + self.yvel)
+        # elif self.y > 340:
+        #     self.y = min(340, self.y + self.yvel)
         self.y += self.yvel
-
-    def draw(self, win):
-        pygame.draw.line(win, (0, 0, 0), (self.x - 200, 0),
-                         (self.x - 200, 500))
-        pygame.draw.line(win, (0, 0, 0), (self.x + 200, 0),
-                         (self.x + 200, 500))
-        pygame.draw.circle(win, (255, 0, 0), (int(self.x), int(self.y)), 1)
-        pygame.draw.circle(win, (255, 0, 0), (int(
-            self.x + self.WIDTH), int(self.y + self.HEIGHT)), 1)
-        if self.onGround:
-            pygame.draw.circle(win, (0, 0, 0), (int(
-                self.x + self.WIDTH / 2), int(self.y)), 5)
+        dy = self.y - (self.yp + self.yvel)
+        for b in blocks:
+            b.y += dy
+        for e in enemies:
+            e.y += dy
 
     def death(self, shells, win):
         for shel in shells:
@@ -154,6 +169,11 @@ class player(pygame.sprite.Sprite):
                 and shel.x + shel.radius < self.x + self.WIDTH
                     and shel.y > self.y and shel.y < self.y + self.HEIGHT):
                 self.hp -= 1
+                shells.pop(shells.index(shel))
         if self.hp <= 0:
-            pygame.draw.line(win, (255, 0, 0), (self.x - 200, 0),
-                             (self.x - 200, 500))
+            # pygame.draw.line(win, (255, 0, 0), (self.x - 200, 0),
+            #                  (self.x - 200, 500))
+            self.player_run = False
+            font = pygame.font.Font(None, 50)
+            text = font.render("You are dead", True, (0, 0, 0))
+            win.blit(text, [250, 250])

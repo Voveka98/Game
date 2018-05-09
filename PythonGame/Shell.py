@@ -23,8 +23,8 @@ class shell(pygame.sprite.Sprite):
 
     def motion(self, blocks):
         self.x += self.vel
-        for block in blocks:
-            if (self.x > block.x and self.x < block.x + block.Blocks_Width and
-                    self.y > block.y and
-                    self.y < block.y + block.Blocks_Height):
-                self.del_shell()
+        # for block in blocks:
+        #     if (self.x > block.x and self.x < block.x + block.Blocks_Width and
+        #             self.y > block.y and
+        #             self.y < block.y + block.Blocks_Height):
+        #         shells.pop(shells.index(shel))

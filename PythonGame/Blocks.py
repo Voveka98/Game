@@ -17,3 +17,11 @@ class Blocks(pygame.sprite.Sprite):
         self.image = pygame.Surface([self.Blocks_Width, self.Blocks_Height])
         self.image.fill(color)
         self.rect = self.image.get_rect()
+        self.isLive = True
+
+    def shell_collision(self, shells):
+        for shell in shells:
+            if (shell.x > self.x and shell.x < self.x + self.Blocks_Width and
+                shell.y > self.y and
+                    shell.y < self.y + self.Blocks_Height):
+                shells.pop(shells.index(shell))
