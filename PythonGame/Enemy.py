@@ -2,6 +2,7 @@ import pygame
 from Load_pictures import stay_picture
 from Shell import shell
 from time import time
+from random import randint, choice
 
 
 onGround = False
@@ -11,6 +12,7 @@ JUMP_SPEED = 30
 Go_right = True
 Go_left = False
 start_time = time()
+colors = [(255, 132, 0), (255, 0, 0), (171, 12, 207), (255, 111, 0)]
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -86,16 +88,32 @@ class Enemy(pygame.sprite.Sprite):
 
     def motion(self, blocks):
         if self.isLive:
+            # for e in enemies:
+            #     if self.x == e.x and self.y == e.y:
+            #         if self.Go_left:
+            #             self.Go_right = True
+            #             self.Go_left = False
+            #         elif self.Go_right:
+            #             self.Go_right = False
+            #             self.Go_left = True
             keys = pygame.key.get_pressed()
             if self.Go_right:
-                self.x += self._x_speed / 4
+                self.x += self._x_speed / 2
             if self.Go_left:
-                self.x -= self._x_speed / 4
+                self.x -= self._x_speed / 2
             if self.onGround and (keys[pygame.K_z]):
                 self.yvel = -1 * JUMP_SPEED
                 self.onGround = False
             if not self.onGround:
                 self.yvel += 2
+            change_direction = randint(1, 501)
+            if change_direction > 498:
+                if self.Go_left:
+                    self.Go_left = False
+                    self.Go_right = True
+                if self.Go_right:
+                    self.Go_right = False
+                    self.Go_left = True
             self.onGround = False
             self.collide(blocks)
             self.y += self.yvel
@@ -115,7 +133,7 @@ class Enemy(pygame.sprite.Sprite):
                             shells.append(shell(round(self.x + self.WIDTH / 2),
                                                 round(
                                 self.y + self.HEIGHT / 2),
-                                5, (255, 255, 0), facing))
+                                5, choice(colors), facing))
                         start_time = current_time
                 else:
                     self.Go_left = True

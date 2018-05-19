@@ -5,7 +5,7 @@ from Load_pictures import walkRight
 from Load_pictures import stay_picture
 from time import sleep
 
-Win_Width = 500
+Win_Width = 1000
 picture = None
 animCount = 0
 WIDTH = 60
@@ -36,10 +36,12 @@ class player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.onGround = onGround
         self.hp = 15000
+        self.max_hp = 15000
         self.collide_right = False
         self.collide_left = False
         self.player_run = True
         self.isLive = True
+        self.True_coordinate = self.x
 
     def collide(self, blocks):
         for block in blocks:
@@ -110,7 +112,7 @@ class player(pygame.sprite.Sprite):
             self.lastMove = 'left'
 
         # Движение вправо
-        elif (keys[pygame.K_RIGHT] and self.x < 450):
+        elif (keys[pygame.K_RIGHT] and self.x < 950):
             self.xvel += MOVE_SPEED
             self.xvel = min(self.xvel, MOVE_SPEED)
             self.lastMove = 'right'
@@ -126,6 +128,7 @@ class player(pygame.sprite.Sprite):
             self.yvel += 2
 
         self.collide(blocks)
+        self.True_coordinate += self.xvel
     # Смена анимации
         if self.xvel < -1 * MOVE_SPEED / 2:
             animCount += 1
@@ -141,21 +144,16 @@ class player(pygame.sprite.Sprite):
             self.x = min(Win_Width * 0.7, self.x + self.xvel)
         else:
             self.x = max(Win_Width * 0.3, self.x + self.xvel)
-        dx = self.x - (self.xp + self.xvel)
+        self.dx = self.x - (self.xp + self.xvel)
         for b in blocks:
-            b.x += dx
+            b.x += self.dx
         for e in enemies:
-            e.x += dx
-        #         e.y += 125
+            e.x += self.dx
+
     # Делаем инерцию движения
-        self.xvel *= 0.8
+        self.xvel *= 0
     # Записываем предыдущую координату.
         self.yp = self.y
-        # if self.onGround:
-        # if self.y < 125:
-        #     self.y = max(125, self.y + self.yvel)
-        # elif self.y > 340:
-        #     self.y = min(340, self.y + self.yvel)
         self.y += self.yvel
         dy = self.y - (self.yp + self.yvel)
         for b in blocks:
@@ -177,3 +175,9 @@ class player(pygame.sprite.Sprite):
             font = pygame.font.Font(None, 50)
             text = font.render("You are dead", True, (0, 0, 0))
             win.blit(text, [250, 250])
+
+    def draw_hp(self, win):
+        font = pygame.font.Font(None, 30)
+        text = font.render(
+            "{}/{} hp".format(self.hp, self.max_hp), True, (150, 0, 0))
+        win.blit(text, [400, 50])
